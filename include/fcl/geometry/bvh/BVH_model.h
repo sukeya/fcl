@@ -69,6 +69,9 @@ public:
   /// @brief copy from another BVH
   BVHModel(const BVHModel& other);
 
+  /// @brief move from another BVH
+  BVHModel(BVHModel&& other) = default;
+
   /// @brief deconstruction, delete mesh data related.
   ~BVHModel();
 
@@ -159,19 +162,13 @@ public:
 
 public:
   /// @brief Geometry point data
-  Vector3<S>* vertices;
+  std::vector<Vector3<S>> vertices;
 
-  /// @brief Geometry triangle index data, will be nullptr for point clouds
-  Triangle* tri_indices;
+  /// @brief Geometry triangle index data, will be empty for point clouds
+  std::vector<Triangle> tri_indices;
 
   /// @brief Geometry point data in previous frame
-  Vector3<S>* prev_vertices;
-
-  /// @brief Number of triangles
-  int num_tris;
-
-  /// @brief Number of points
-  int num_vertices;
+  std::vector<Vector3<S>> prev_vertices;
 
   /// @brief The state of BVH building process
   BVHBuildState build_state;
@@ -183,18 +180,11 @@ public:
   std::shared_ptr<detail::BVFitterBase<BV>> bv_fitter;
 
 private:
-
-  int num_tris_allocated;
-  int num_vertices_allocated;
-  int num_bvs_allocated;
-  int num_vertex_updated; /// for ccd vertex update
-  unsigned int* primitive_indices;
+  unsigned int num_vertex_updated; /// for ccd vertex update
+  std::vector<unsigned int> primitive_indices;
 
   /// @brief Bounding volume hierarchy
-  BVNode<BV>* bvs;
-
-  /// @brief Number of BV nodes in bounding volume hierarchy
-  int num_bvs;
+  std::vector<BVNode<BV>> bvs;
 
   /// @brief Build the bounding volume hierarchy
   int buildTree();
